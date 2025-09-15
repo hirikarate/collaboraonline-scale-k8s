@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaling-cool-client
+  labels:
+    app: scaling-cool-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scaling-cool-client
+  template:
+    metadata:
+      labels:
+        app: scaling-cool-client
+    spec:
+      containers:
+      - name: scaling-cool-client
+        image: scaling-cool-client:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: NGINX_PORT
+          value: "80"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 80
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /health
+        #     port: 80
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 5

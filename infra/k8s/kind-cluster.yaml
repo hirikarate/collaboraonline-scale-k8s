@@ -1,0 +1,15 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+  - containerPort: 3000
+    hostPort: 3000
+  - containerPort: 3001
+    hostPort: 3001
+  - containerPort: 9980 # Collabora Editor
+    hostPort: 9980
+  - containerPort: 9981 # Collabora Admin
+    hostPort: 9981

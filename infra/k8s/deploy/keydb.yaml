@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keydb
+  labels:
+    app: keydb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keydb
+  template:
+    metadata:
+      labels:
+        app: keydb
+    spec:
+      containers:
+      - name: keydb
+        image: eqalpha/keydb:alpine_x86_64_v6.3.4  # use latest stable tag
+        imagePullPolicy: IfNotPresent
+        args: ["keydb-server", "--protected-mode", "no"]
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        volumeMounts:
+        - name: keydb-data
+          mountPath: /data
+      volumes:
+      - name: keydb-data
+        emptyDir: {}  # for ephemeral storage; replace with PVC for persistence
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keydb
+  labels:
+    app: keydb
+spec:
+  selector:
+    app: keydb
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+  type: ClusterIP
