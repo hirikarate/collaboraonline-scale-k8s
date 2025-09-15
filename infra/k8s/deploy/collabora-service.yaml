@@ -1,3 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collabora-online
+  labels:
+    app: collabora-online
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: collabora-online
+  template:
+    metadata:
+      labels:
+        app: collabora-online
+    spec:
+      containers:
+      - name: collabora-online
+        image: collabora/code:25.04.5.1.1
+        imagePullPolicy: IfNotPresent
+        args:
+        - --o:server_name=collabora.local:8080
+        - --o:ssl.enable=false
+        - --o:ssl.termination=false
+        - --o:wopi.host[0].host=wopi.local
+        - --o:wopi.host[0].allow=true
+        - --o:remote_font_config.allow=true
+        - --o:net.content_security_policy=frame-ancestors *;
+        ports:
+        - containerPort: 9980
+          name: http
+        - containerPort: 9981
+          name: https
+        env:
+        # - name: COLLABORA_CONFIG
+        #   value: "/etc/collabora/collabora-config.xml"
+        - name: domain
+          value: ".*"       # allow all hostnames (for dev only!)
+        - name: username
+          value: "admin"    # optional (for admin console auth)
+        - name: password
+          value: "secret"   # optional (for admin console auth)
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      - name: cool-sidecar
+        image: cool-sidecar:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: REDIS_ADDR
+          value: "keydb:6379"
+        - name: REDIS_PASS
+          value: ""  # no password for KeyDB
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "50m"
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,11 +78,11 @@ spec:
     app: collabora-online
   ports:
   - name: http
-    port: 80
+    port: 9980
     targetPort: 9980
     protocol: TCP
   - name: https
-    port: 443
+    port: 9981
     targetPort: 9981
     protocol: TCP
   type: ClusterIP

@@ -30,8 +30,11 @@ func main() {
 
 	key := fmt.Sprintf("%s:%s", registryNS, podIP)
 
+	// Connection count will be updated by cool-distributor
+	connectionCount := "0"
+
 	// Register on startup
-	if err := rdb.Set(ctx, key, "1", keyTTL).Err(); err != nil {
+	if err := rdb.Set(ctx, key, connectionCount, keyTTL).Err(); err != nil {
 		panic(err)
 	}
 	fmt.Println("Registered pod:", key)
@@ -45,7 +48,7 @@ func main() {
 
 	go func() {
 		for range ticker.C {
-			rdb.Set(ctx, key, "1", keyTTL)
+			rdb.Expire(ctx, key, keyTTL) // Auto-expire if no activity
 		}
 	}()
 

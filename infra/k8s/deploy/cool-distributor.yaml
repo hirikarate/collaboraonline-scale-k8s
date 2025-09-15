@@ -1,31 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wopi-service
+  name: cool-distributor
   labels:
-    app: wopi-service
+    app: cool-distributor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wopi-service
+      app: cool-distributor
   template:
     metadata:
       labels:
-        app: wopi-service
+        app: cool-distributor
     spec:
       containers:
-      - name: wopi-service
-        image: scaling-cool-server:latest
+      - name: cool-distributor
+        image: cool-distributor:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 3001
+        - containerPort: 80
           name: http
         env:
         - name: PORT
-          value: "3001"
-        - name: HOST
-          value: "0.0.0.0"
+          value: "80"
+        - name: REDIS_ADDR
+          value: "keydb:6379"
+        - name: REDIS_PASS
+          value: ""  # no password for KeyDB
         resources:
           requests:
             memory: "256Mi"
@@ -37,15 +39,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: wopi-service
+  name: cool-distributor
   labels:
-    app: wopi-service
+    app: cool-distributor
 spec:
   selector:
-    app: wopi-service
+    app: cool-distributor
   ports:
   - name: http
     port: 80
-    targetPort: 3001
+    targetPort: 80
     protocol: TCP
   type: ClusterIP

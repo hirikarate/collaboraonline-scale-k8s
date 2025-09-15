@@ -5,7 +5,7 @@ import LoaderForm from './LoaderForm'
 
 const WOPI_ADDR_EXT = 'http://wopi.local:8080';
 const WOPI_ADDR_INT = 'http://wopi-service';
-const COOL_ADDR = 'http://collabora-service';
+const COOL_ADDR = 'http://collabora-service:9980';
 
 class App extends React.Component<any, any> {
     constructor(props: any) {

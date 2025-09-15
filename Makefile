@@ -7,6 +7,12 @@ build-server:
 	docker build -t scaling-cool-server:latest ./wopi-server
 	# && kind load docker-image scaling-cool-server:latest
 
+build-sidecar:
+	docker build -t cool-sidecar:latest ./cool-sidecar
+
+build-distributor:
+	docker build -t cool-distributor:latest ./cool-distributor
+
 create-cluster:
 	#kind create cluster --config ./infra/k8s/kind-cluster.yaml && \
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/kind/deploy.yaml && \
@@ -15,6 +21,8 @@ create-cluster:
 
 k8s-nginx:
 	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.13.2/deploy/static/provider/cloud/deploy.yaml && \
+	
+k8s-port:
 	kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80
 
 k8s-deploy:
@@ -28,3 +36,6 @@ k8s-cool-ls:
 
 k8s-redeploy-wopi:
 	kubectl rollout restart deployment/wopi-service
+
+k8s-pod:
+	kubectl get pods

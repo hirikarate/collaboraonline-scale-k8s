@@ -5,15 +5,12 @@ metadata:
   name: collabora-online-deployment
 
 resources:
-- collabora-configmap.yaml
-- collabora-deployment.yaml
+- client-app.yaml
 - collabora-service.yaml
-- keydb.yaml
-- wopi-deployment.yaml
-- wopi-service.yaml
-- client-deployment.yaml
-- client-service.yaml
+- cool-distributor.yaml
 - ingress.yaml
+- keydb.yaml
+- wopi-service.yaml
 
 commonLabels:
   app.kubernetes.io/name: collabora-online
